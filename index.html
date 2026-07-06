@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RK Properties — Gaya, Bihar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sand: #EFEAD9;
+    --sand-deep: #E4DCC4;
+    --brick: #B5502A;
+    --brick-deep: #8E3D1F;
+    --soil: #3E2B23;
+    --ink: #211A15;
+    --gold: #C89B3C;
+    --line: rgba(62,43,35,0.18);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--sand);
+    color:var(--ink);
+    font-family:'Work Sans', sans-serif;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 42px 42px;
+  }
+  ::selection{ background:var(--gold); color:var(--ink); }
+
+  header{
+    padding: 48px 24px 32px;
+    text-align:center;
+    border-bottom: 2px dashed var(--line);
+    background: var(--sand);
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:var(--brick-deep);
+    margin-bottom:14px;
+  }
+  h1{
+    font-family:'Fraunces', serif;
+    font-weight:700;
+    font-size: clamp(2.2rem, 6vw, 3.6rem);
+    letter-spacing:-0.01em;
+    color:var(--soil);
+  }
+  header p.tag{
+    margin-top:10px;
+    font-size:15px;
+    color:var(--brick-deep);
+    font-weight:500;
+  }
+
+  .seal{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    margin-top:20px;
+    padding:6px 16px;
+    border:1.5px solid var(--brick);
+    border-radius:100px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    color:var(--brick-deep);
+  }
+  .seal::before{ content:"●"; color:var(--gold); font-size:8px; }
+
+  main{ max-width: 1080px; margin:0 auto; padding: 40px 20px 80px; }
+
+  .filters{
+    display:flex; gap:10px; flex-wrap:wrap;
+    justify-content:center;
+    margin-bottom:36px;
+  }
+  .filters button{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.5px;
+    padding:9px 18px;
+    background:transparent;
+    border:1.5px solid var(--soil);
+    color:var(--soil);
+    border-radius:100px;
+    cursor:pointer;
+    transition: all .15s ease;
+  }
+  .filters button:hover{ background:var(--soil); color:var(--sand); }
+  .filters button.active{ background:var(--brick); border-color:var(--brick); color:#fff; }
+
+  .grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 28px;
+  }
+
+  .card{
+    background:#fff;
+    border:1.5px solid var(--line);
+    border-radius:4px;
+    position:relative;
+    overflow:hidden;
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+  .card:hover{ transform: translateY(-4px); box-shadow: 0 14px 30px rgba(62,43,35,0.12); }
+
+  .card-photo{
+    height:170px;
+    background:linear-gradient(135deg, var(--sand-deep), var(--gold) 180%);
+    position:relative;
+    display:flex; align-items:flex-end;
+  }
+  .khasra{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    color:var(--soil);
+    background:rgba(255,255,255,0.85);
+    padding:4px 10px;
+    margin:12px;
+    border-radius:3px;
+    letter-spacing:0.5px;
+  }
+  .status-tag{
+    position:absolute; top:12px; right:12px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:10px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    padding:4px 10px;
+    border-radius:100px;
+    background:var(--soil);
+    color:var(--sand);
+  }
+
+  .card-body{ padding:20px 20px 22px; }
+  .card-body h3{
+    font-family:'Fraunces', serif;
+    font-size:1.25rem;
+    font-weight:600;
+    color:var(--soil);
+    margin-bottom:4px;
+  }
+  .location{
+    font-size:13px;
+    color:var(--brick-deep);
+    margin-bottom:14px;
+    font-weight:500;
+  }
+  .specs{
+    display:flex; gap:14px; flex-wrap:wrap;
+    font-family:'JetBrains Mono', monospace;
+    font-size:11.5px;
+    color:var(--soil);
+    padding-bottom:16px;
+    margin-bottom:16px;
+    border-bottom: 1px dashed var(--line);
+  }
+  .specs span{ opacity:0.85; }
+  .price{
+    font-family:'Fraunces', serif;
+    font-weight:700;
+    font-size:1.35rem;
+    color:var(--brick);
+    margin-bottom:16px;
+  }
+  .wa-btn{
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    width:100%;
+    padding:12px;
+    background:var(--brick);
+    color:#fff;
+    text-decoration:none;
+    border-radius:4px;
+    font-weight:600;
+    font-size:14px;
+    transition: background .15s ease;
+  }
+  .wa-btn:hover{ background:var(--brick-deep); }
+  .wa-btn svg{ width:16px; height:16px; fill:#fff; }
+
+  .empty{
+    text-align:center;
+    padding: 60px 20px;
+    color: var(--brick-deep);
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px;
+  }
+
+  footer{
+    text-align:center;
+    padding: 28px 20px 40px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    color:var(--brick-deep);
+    letter-spacing:0.5px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Gaya · Bihar</div>
+  <h1>RK Properties</h1>
+  <p class="tag">Verified plots &amp; properties, listed only by our team</p>
+  <div class="seal">RK Verified Listing</div>
+</header>
+
+<main>
+  <div class="filters" id="filters"></div>
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="emptyMsg" style="display:none;">Is category mein abhi koi listing nahi hai. Jaldi update hoga.</div>
+</main>
+
+<footer>© <span id="year"></span> RK Properties — Gaya, Bihar. Direct enquiry only via WhatsApp.</footer>
+
+<script>
+/* ============================================================
+   YAHAN APNI PROPERTIES ADD/EDIT/REMOVE KARO.
+   Ye list SIRF is code file ke andar hai — customer isse edit
+   nahi kar sakta. Naya property add karna ho to niche is
+   array mein ek naya { } object jod do (comma se separate karke).
+   ============================================================ */
+
+const WHATSAPP_NUMBER = "917079108843"; // <-- apna number yahan daalo (country code ke saath, + ya spaces nahi)
+
+const properties = [
+  {
+    id: "GYA-CHN-014",
+    title: "Residential Plot — Chandauti",
+    location: "Chandauti Mauja, Gaya",
+    type: "Plot",
+    area: "1800 sq.ft",
+    price: "₹18,00,000",
+    status: "Available"
+  },
+  {
+    id: "GYA-CHN-021",
+    title: "Corner Plot near Main Road",
+    location: "Chandauti Mauja, Gaya",
+    type: "Plot",
+    area: "2400 sq.ft",
+    price: "₹27,50,000",
+    status: "Available"
+  },
+  {
+    id: "GYA-CTY-009",
+    title: "2BHK Independent House",
+    location: "Gaya City",
+    type: "House",
+    area: "1200 sq.ft",
+    price: "₹42,00,000",
+    status: "Booked"
+  },
+  {
+    id: "GYA-AGR-005",
+    title: "Agricultural Land",
+    location: "Near Gaya-Patna Highway",
+    type: "Agricultural",
+    area: "1.2 Acre",
+    price: "₹35,00,000",
+    status: "Available"
+  }
+];
+
+/* ============================================================
+   Yahan se neeche kuch mat badlo — ye sirf display logic hai
+   ============================================================ */
+
+document.getElementById('year').textContent = new Date().getFullYear();
+
+const grid = document.getElementById('grid');
+const filtersEl = document.getElementById('filters');
+const emptyMsg = document.getElementById('emptyMsg');
+
+const types = ["All", ...new Set(properties.map(p => p.type))];
+let activeFilter = "All";
+
+function waLink(prop){
+  const msg = `Namaste RK Properties, mujhe is property mein interest hai:\n${prop.title} (${prop.id}) - ${prop.location}`;
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+}
+
+function render(){
+  grid.innerHTML = "";
+  const list = activeFilter === "All" ? properties : properties.filter(p => p.type === activeFilter);
+
+  emptyMsg.style.display = list.length === 0 ? "block" : "none";
+
+  list.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="card-photo">
+        <div class="khasra">Ref: ${p.id}</div>
+        <div class="status-tag">${p.status}</div>
+      </div>
+      <div class="card-body">
+        <h3>${p.title}</h3>
+        <div class="location">${p.location}</div>
+        <div class="specs">
+          <span>Type: ${p.type}</span>
+          <span>Area: ${p.area}</span>
+        </div>
+        <div class="price">${p.price}</div>
+        <a class="wa-btn" href="${waLink(p)}" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.28-1.38a9.9 9.9 0 0 0 4.76 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.87 9.87 0 0 0 12.04 2m0 1.8a8.1 8.1 0 0 1 8.1 8.11c0 4.48-3.64 8.11-8.11 8.11a8.1 8.1 0 0 1-4.13-1.13l-.3-.17-3.13.82.84-3.05-.19-.31a8.07 8.07 0 0 1-1.24-4.31c0-4.48 3.64-8.11 8.16-8.11m4.48 5.8c-.15-.3-.51-.5-.75-.55-.24-.05-.5-.06-.71.04-.2.09-.45.29-.7.55-.25.26-.55.6-.7.99-.14.38-.14.85.05 1.24.19.4.7 1.05 1.5 1.79.87.8 1.6 1.09 1.99 1.22.4.14.75.12 1.03-.03.28-.15.9-.51 1.03-.98.13-.47.13-.87.09-.96-.04-.09-.15-.14-.3-.22" /></svg>
+          WhatsApp par Contact karo
+        </a>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function renderFilters(){
+  filtersEl.innerHTML = "";
+  types.forEach(t => {
+    const btn = document.createElement('button');
+    btn.textContent = t;
+    if (t === activeFilter) btn.classList.add('active');
+    btn.onclick = () => { activeFilter = t; renderFilters(); render(); };
+    filtersEl.appendChild(btn);
+  });
+}
+
+renderFilters();
+render();
+</script>
+
+</body>
+</html>
