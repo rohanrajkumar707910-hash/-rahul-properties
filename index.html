@@ -114,8 +114,11 @@
   .card-photo{
     height:170px;
     background:linear-gradient(135deg, var(--sand-deep), var(--gold) 180%);
+    background-size:cover;
+    background-position:center;
     position:relative;
     display:flex; align-items:flex-end;
+    cursor:pointer;
   }
   .khasra{
     font-family:'JetBrains Mono', monospace;
@@ -137,6 +140,110 @@
     border-radius:100px;
     background:var(--soil);
     color:var(--sand);
+  }
+  .media-badge{
+    position:absolute; bottom:12px; right:12px;
+    display:flex; gap:6px;
+  }
+  .media-badge span{
+    font-family:'JetBrains Mono', monospace;
+    font-size:10.5px;
+    background:rgba(33,26,21,0.75);
+    color:#fff;
+    padding:4px 9px;
+    border-radius:100px;
+    display:flex; align-items:center; gap:4px;
+  }
+
+  .landmarks{
+    display:flex; flex-wrap:wrap; gap:6px;
+    margin-bottom:16px;
+  }
+  .landmarks .chip{
+    font-size:11px;
+    background:var(--sand);
+    border:1px solid var(--line);
+    color:var(--soil);
+    padding:4px 9px;
+    border-radius:100px;
+  }
+  .landmarks .chip b{ color:var(--brick-deep); font-weight:600; }
+
+  .view-details{
+    display:block;
+    text-align:center;
+    font-family:'JetBrains Mono', monospace;
+    font-size:11.5px;
+    letter-spacing:0.5px;
+    color:var(--brick-deep);
+    text-decoration:underline;
+    cursor:pointer;
+    margin-bottom:12px;
+  }
+
+  .modal-overlay{
+    display:none;
+    position:fixed; inset:0;
+    background:rgba(33,26,21,0.75);
+    z-index:100;
+    align-items:center; justify-content:center;
+    padding:20px;
+  }
+  .modal-overlay.open{ display:flex; }
+  .modal-box{
+    background:#fff;
+    max-width:640px; width:100%;
+    max-height:90vh;
+    overflow-y:auto;
+    border-radius:6px;
+    position:relative;
+  }
+  .modal-close{
+    position:absolute; top:12px; right:14px;
+    background:var(--soil); color:#fff;
+    width:30px; height:30px; border-radius:100px;
+    border:none; cursor:pointer; font-size:16px;
+    z-index:2;
+  }
+  .modal-gallery{
+    height:280px;
+    background:var(--sand-deep);
+    background-size:cover; background-position:center;
+    position:relative;
+  }
+  .modal-gallery-nav{
+    position:absolute; top:50%; transform:translateY(-50%);
+    background:rgba(33,26,21,0.6); color:#fff; border:none;
+    width:34px; height:34px; border-radius:100px; cursor:pointer; font-size:16px;
+  }
+  .modal-gallery-nav.prev{ left:10px; }
+  .modal-gallery-nav.next{ right:10px; }
+  .modal-dots{
+    position:absolute; bottom:10px; left:0; right:0;
+    display:flex; justify-content:center; gap:6px;
+  }
+  .modal-dots span{
+    width:6px; height:6px; border-radius:100px;
+    background:rgba(255,255,255,0.55);
+  }
+  .modal-dots span.active{ background:#fff; }
+  .modal-body{ padding:24px; }
+  .modal-body h2{
+    font-family:'Fraunces', serif; font-size:1.5rem; color:var(--soil); margin-bottom:6px;
+  }
+  .modal-video{
+    display:inline-flex; align-items:center; gap:6px;
+    margin:10px 0 16px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    color:var(--brick); text-decoration:none;
+    border:1.5px solid var(--brick); padding:7px 14px; border-radius:100px;
+  }
+  .modal-video:hover{ background:var(--brick); color:#fff; }
+  .modal-section-title{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px; letter-spacing:1px; text-transform:uppercase;
+    color:var(--brick-deep); margin: 18px 0 10px;
   }
 
   .card-body{ padding:20px 20px 22px; }
@@ -207,9 +314,9 @@
 
 <header>
   <div class="eyebrow">Gaya · Bihar</div>
-  <h1>RK Properties</h1>
+  <h1>Rahul's Properties</h1>
   <p class="tag">Verified plots &amp; properties, listed only by our team</p>
-  <div class="seal">RK Verified Listing</div>
+  <div class="seal">Rahul's Verified Listing</div>
 </header>
 
 <main>
@@ -218,7 +325,19 @@
   <div class="empty" id="emptyMsg" style="display:none;">Is category mein abhi koi listing nahi hai. Jaldi update hoga.</div>
 </main>
 
-<footer>© <span id="year"></span> RK Properties — Gaya, Bihar. Direct enquiry only via WhatsApp.</footer>
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <button class="modal-close" id="modalClose">✕</button>
+    <div class="modal-gallery" id="modalGallery">
+      <button class="modal-gallery-nav prev" id="galPrev">‹</button>
+      <button class="modal-gallery-nav next" id="galNext">›</button>
+      <div class="modal-dots" id="galDots"></div>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<footer>© <span id="year"></span> Rahul's Properties — Gaya, Bihar. Direct enquiry only via WhatsApp.</footer>
 
 <script>
 /* ============================================================
@@ -228,26 +347,28 @@
    array mein ek naya { } object jod do (comma se separate karke).
    ============================================================ */
 
-const WHATSAPP_NUMBER = "917079108843"; // <-- apna number yahan daalo (country code ke saath, + ya spaces nahi)
+const WHATSAPP_NUMBER = "91XXXXXXXXXX"; // <-- apna number yahan daalo (country code ke saath, + ya spaces nahi)
 
 const properties = [
   {
-    title: "Residental Plot For Sale",
-    location: "Mora Mardana, Bodh Gaya",
+    id: "GYA-CHN-014",
+    title: "Residential Plot — Chandauti",
+    location: "Chandauti Mauja, Gaya",
     type: "Plot",
-    area: "23522 sq.ft",
-    price: "8,00,000",
-    status: "13 Plots Available",
+    area: "1800 sq.ft",
+    price: "₹18,00,000",
+    status: "Available",
     photos: [
-      "https://drive.google.com/file/d/1adhwhKYlIMVmAPQw022VkUUuG41p5cKq/view?usp=drive_link",
-      "https://drive.google.com/file/d/1thD1LYGe0vLMOojt0nW_16vXK5j-HoAC/view?usp=sharing"
+      "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800",
+      "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800"
     ],
-    video: "https://drive.google.com/file/d/1pI5qqItFqVzXot6WB0RCK2EvD8cvI9bM/view?usp=drive_linkK",
+    video: "",
     landmarks: [
- { icon: "🚗", name: "Toyota Showroom (Budha Toyota)", distance: "~2.8 km" },
-  { icon: "🏥", name: "Hospital (near Ram Shankar Ashram)", distance: "~4 km" },
-  { icon: "🛒", name: "Ali Market", distance: "~3.5 km" }
-]
+      { icon: "🏥", name: "Sadar Hospital", distance: "1.2 km" },
+      { icon: "🛕", name: "Vishnupad Temple", distance: "3 km" },
+      { icon: "🚗", name: "Toyota Showroom", distance: "2.5 km" },
+      { icon: "🌾", name: "Rice Mill", distance: "0.8 km" }
+    ]
   },
   {
     id: "GYA-CHN-021",
@@ -256,7 +377,15 @@ const properties = [
     type: "Plot",
     area: "2400 sq.ft",
     price: "₹27,50,000",
-    status: "Available"
+    status: "Available",
+    photos: [
+      "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800"
+    ],
+    video: "",
+    landmarks: [
+      { icon: "🏫", name: "Govt. School", distance: "0.5 km" },
+      { icon: "🚌", name: "Bus Stand", distance: "1 km" }
+    ]
   },
   {
     id: "GYA-CTY-009",
@@ -265,7 +394,10 @@ const properties = [
     type: "House",
     area: "1200 sq.ft",
     price: "₹42,00,000",
-    status: "Booked"
+    status: "Booked",
+    photos: [],
+    video: "",
+    landmarks: []
   },
   {
     id: "GYA-AGR-005",
@@ -274,7 +406,12 @@ const properties = [
     type: "Agricultural",
     area: "1.2 Acre",
     price: "₹35,00,000",
-    status: "Available"
+    status: "Available",
+    photos: [],
+    video: "",
+    landmarks: [
+      { icon: "🛣️", name: "Gaya-Patna Highway", distance: "0.2 km" }
+    ]
   }
 ];
 
@@ -292,8 +429,12 @@ const types = ["All", ...new Set(properties.map(p => p.type))];
 let activeFilter = "All";
 
 function waLink(prop){
-  const msg = `Namaste RK Properties, mujhe is property mein interest hai:\n${prop.title} (${prop.id}) - ${prop.location}`;
+  const msg = `Namaste Rahul's Properties, mujhe is property mein interest hai:\n${prop.title} (${prop.id}) - ${prop.location}`;
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+}
+
+function waIconSvg(){
+  return `<svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.28-1.38a9.9 9.9 0 0 0 4.76 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.87 9.87 0 0 0 12.04 2m0 1.8a8.1 8.1 0 0 1 8.1 8.11c0 4.48-3.64 8.11-8.11 8.11a8.1 8.1 0 0 1-4.13-1.13l-.3-.17-3.13.82.84-3.05-.19-.31a8.07 8.07 0 0 1-1.24-4.31c0-4.48 3.64-8.11 8.16-8.11m4.48 5.8c-.15-.3-.51-.5-.75-.55-.24-.05-.5-.06-.71.04-.2.09-.45.29-.7.55-.25.26-.55.6-.7.99-.14.38-.14.85.05 1.24.19.4.7 1.05 1.5 1.79.87.8 1.6 1.09 1.99 1.22.4.14.75.12 1.03-.03.28-.15.9-.51 1.03-.98.13-.47.13-.87.09-.96-.04-.09-.15-.14-.3-.22" /></svg>`;
 }
 
 function render(){
@@ -303,12 +444,26 @@ function render(){
   emptyMsg.style.display = list.length === 0 ? "block" : "none";
 
   list.forEach(p => {
+    const photos = p.photos || [];
+    const coverStyle = photos.length
+      ? `style="background-image:url('${photos[0]}')"`
+      : "";
+
+    const badges = [];
+    if (photos.length) badges.push(`<span>📷 ${photos.length}</span>`);
+    if (p.video) badges.push(`<span>🎥 Video</span>`);
+
+    const landmarkChips = (p.landmarks || []).slice(0, 3).map(l =>
+      `<span class="chip">${l.icon} <b>${l.name}</b> — ${l.distance}</span>`
+    ).join("");
+
     const card = document.createElement('div');
     card.className = 'card';
     card.innerHTML = `
-      <div class="card-photo">
+      <div class="card-photo" ${coverStyle} data-id="${p.id}">
         <div class="khasra">Ref: ${p.id}</div>
         <div class="status-tag">${p.status}</div>
+        ${badges.length ? `<div class="media-badge">${badges.join("")}</div>` : ""}
       </div>
       <div class="card-body">
         <h3>${p.title}</h3>
@@ -317,16 +472,99 @@ function render(){
           <span>Type: ${p.type}</span>
           <span>Area: ${p.area}</span>
         </div>
+        ${landmarkChips ? `<div class="landmarks">${landmarkChips}</div>` : ""}
         <div class="price">${p.price}</div>
+        <span class="view-details" data-id="${p.id}">Poori details, photos &amp; nearby jagah dekho →</span>
         <a class="wa-btn" href="${waLink(p)}" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.28-1.38a9.9 9.9 0 0 0 4.76 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.87 9.87 0 0 0 12.04 2m0 1.8a8.1 8.1 0 0 1 8.1 8.11c0 4.48-3.64 8.11-8.11 8.11a8.1 8.1 0 0 1-4.13-1.13l-.3-.17-3.13.82.84-3.05-.19-.31a8.07 8.07 0 0 1-1.24-4.31c0-4.48 3.64-8.11 8.16-8.11m4.48 5.8c-.15-.3-.51-.5-.75-.55-.24-.05-.5-.06-.71.04-.2.09-.45.29-.7.55-.25.26-.55.6-.7.99-.14.38-.14.85.05 1.24.19.4.7 1.05 1.5 1.79.87.8 1.6 1.09 1.99 1.22.4.14.75.12 1.03-.03.28-.15.9-.51 1.03-.98.13-.47.13-.87.09-.96-.04-.09-.15-.14-.3-.22" /></svg>
+          ${waIconSvg()}
           WhatsApp par Contact karo
         </a>
       </div>
     `;
     grid.appendChild(card);
   });
+
+  document.querySelectorAll('.view-details, .card-photo').forEach(el => {
+    el.onclick = () => openModal(el.getAttribute('data-id'));
+  });
 }
+
+/* ===================== MODAL (Photo gallery + Video + Landmarks) ===================== */
+
+const modalOverlay = document.getElementById('modalOverlay');
+const modalGallery = document.getElementById('modalGallery');
+const modalBody = document.getElementById('modalBody');
+const galDots = document.getElementById('galDots');
+let currentPhotoIndex = 0;
+let currentProperty = null;
+
+function openModal(id){
+  currentProperty = properties.find(p => p.id === id);
+  if (!currentProperty) return;
+  currentPhotoIndex = 0;
+  renderGallery();
+  renderModalBody();
+  modalOverlay.classList.add('open');
+}
+
+function closeModal(){
+  modalOverlay.classList.remove('open');
+  currentProperty = null;
+}
+
+function renderGallery(){
+  const photos = currentProperty.photos || [];
+  if (photos.length){
+    modalGallery.style.backgroundImage = `url('${photos[currentPhotoIndex]}')`;
+  } else {
+    modalGallery.style.backgroundImage = "none";
+  }
+  galDots.innerHTML = photos.map((_, i) =>
+    `<span class="${i === currentPhotoIndex ? 'active' : ''}"></span>`
+  ).join("");
+  document.getElementById('galPrev').style.display = photos.length > 1 ? 'block' : 'none';
+  document.getElementById('galNext').style.display = photos.length > 1 ? 'block' : 'none';
+}
+
+document.getElementById('galPrev').onclick = (e) => {
+  e.stopPropagation();
+  const photos = currentProperty.photos || [];
+  currentPhotoIndex = (currentPhotoIndex - 1 + photos.length) % photos.length;
+  renderGallery();
+};
+document.getElementById('galNext').onclick = (e) => {
+  e.stopPropagation();
+  const photos = currentProperty.photos || [];
+  currentPhotoIndex = (currentPhotoIndex + 1) % photos.length;
+  renderGallery();
+};
+
+function renderModalBody(){
+  const p = currentProperty;
+  const landmarksFull = (p.landmarks || []).map(l =>
+    `<span class="chip">${l.icon} <b>${l.name}</b> — ${l.distance}</span>`
+  ).join("");
+
+  modalBody.innerHTML = `
+    <h2>${p.title}</h2>
+    <div class="location">${p.location} · Ref: ${p.id}</div>
+    <div class="specs">
+      <span>Type: ${p.type}</span>
+      <span>Area: ${p.area}</span>
+      <span>Status: ${p.status}</span>
+    </div>
+    ${p.video ? `<a class="modal-video" href="${p.video}" target="_blank" rel="noopener">🎥 Video dekho</a>` : ""}
+    ${landmarksFull ? `<div class="modal-section-title">Aas-paas kya kya hai</div><div class="landmarks">${landmarksFull}</div>` : ""}
+    <div class="price">${p.price}</div>
+    <a class="wa-btn" href="${waLink(p)}" target="_blank" rel="noopener">
+      ${waIconSvg()}
+      WhatsApp par Contact karo
+    </a>
+  `;
+}
+
+document.getElementById('modalClose').onclick = closeModal;
+modalOverlay.onclick = (e) => { if (e.target === modalOverlay) closeModal(); };
 
 function renderFilters(){
   filtersEl.innerHTML = "";
